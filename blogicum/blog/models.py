@@ -1,5 +1,7 @@
 from django.db import models
 
+TITLE_MAX_LENGTH = 256
+
 
 class BaseModel(models.Model):
     """
@@ -20,7 +22,10 @@ class BaseModel(models.Model):
 
 
 class Category(BaseModel):
-    title = models.CharField(max_length=256, verbose_name='Заголовок')
+    title = models.CharField(
+        max_length=TITLE_MAX_LENGTH,
+        verbose_name='Заголовок'
+    )
     description = models.TextField(verbose_name='Описание')
     slug = models.SlugField(
         unique=True,
@@ -40,7 +45,10 @@ class Category(BaseModel):
 
 
 class Location(BaseModel):
-    name = models.CharField(max_length=256, verbose_name='Название места')
+    name = models.CharField(
+        max_length=TITLE_MAX_LENGTH,
+        verbose_name='Название места'
+    )
 
     class Meta:
         verbose_name = 'местоположение'
@@ -48,7 +56,10 @@ class Location(BaseModel):
 
 
 class Post(BaseModel):
-    title = models.CharField(max_length=256, verbose_name='Заголовок')
+    title = models.CharField(
+        max_length=TITLE_MAX_LENGTH,
+        verbose_name='Заголовок'
+    )
     text = models.TextField(verbose_name='Текст')
     pub_date = models.DateTimeField(
         verbose_name='Дата и время публикации',
@@ -59,22 +70,26 @@ class Post(BaseModel):
     )
     author = models.ForeignKey('auth.User',
                                on_delete=models.CASCADE,
-                               verbose_name='Автор публикации')
+                               verbose_name='Автор публикации',
+                               related_name='posts')
     location = models.ForeignKey(
         Location,
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
-        verbose_name='Местоположение'
+        verbose_name='Местоположение',
+        related_name='posts'
     )
     category = models.ForeignKey(
         Category,
         on_delete=models.SET_NULL,
         null=True,
-        verbose_name='Категория'
+        verbose_name='Категория',
+        related_name='posts'
     )
 
     class Meta:
+        ordering = ['-pub_date']
         verbose_name = 'публикация'
         verbose_name_plural = 'Публикации'
 
